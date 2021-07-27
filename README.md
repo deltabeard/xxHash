@@ -7,10 +7,6 @@ It successfully completes the [SMHasher](https://code.google.com/p/smhasher/wiki
 which evaluates collision, dispersion and randomness qualities of hash functions.
 Code is highly portable, and hashes are identical across all platforms (little / big endian).
 
-|Branch      |Status   |
-|------------|---------|
-|dev         | [![Build Status](https://travis-ci.org/Cyan4973/xxHash.svg?branch=dev)](https://travis-ci.org/Cyan4973/xxHash?branch=dev) |
-
 
 Benchmarks
 -------------------------
@@ -139,87 +135,9 @@ For the Command Line Interface `xxhsum`, the following environment variables can
 - `DISPATCH=1` : use `xxh_x86dispatch.c`, to automatically select between `scalar`, `sse2`, `avx2` or `avx512` instruction set at runtime, depending on local host. This option is only valid for `x86`/`x64` systems.
 
 
-### Building xxHash - Using vcpkg
-
-You can download and install xxHash using the [vcpkg](https://github.com/Microsoft/vcpkg) dependency manager:
-
-    git clone https://github.com/Microsoft/vcpkg.git
-    cd vcpkg
-    ./bootstrap-vcpkg.sh
-    ./vcpkg integrate install
-    ./vcpkg install xxhash
-
-The xxHash port in vcpkg is kept up to date by Microsoft team members and community contributors. If the version is out of date, please [create an issue or pull request](https://github.com/Microsoft/vcpkg) on the vcpkg repository.
-
-
-### Example
-
-The simplest example calls xxhash 64-bit variant as a one-shot function
-generating a hash value from a single buffer, and invoked from a C/C++ program:
-
-```C
-#include "xxhash.h"
-
-    (...)
-    XXH64_hash_t hash = XXH64(buffer, size, seed);
-}
-```
-
-Streaming variant is more involved, but makes it possible to provide data incrementally:
-
-```C
-#include "stdlib.h"   /* abort() */
-#include "xxhash.h"
-
-
-XXH64_hash_t calcul_hash_streaming(FileHandler fh)
-{
-    /* create a hash state */
-    XXH64_state_t* const state = XXH64_createState();
-    if (state==NULL) abort();
-
-    size_t const bufferSize = SOME_SIZE;
-    void* const buffer = malloc(bufferSize);
-    if (buffer==NULL) abort();
-
-    /* Initialize state with selected seed */
-    XXH64_hash_t const seed = 0;   /* or any other value */
-    if (XXH64_reset(state, seed) == XXH_ERROR) abort();
-
-    /* Feed the state with input data, any size, any number of times */
-    (...)
-    while ( /* some data left */ ) {
-        size_t const length = get_more_data(buffer, bufferSize, fh);
-        if (XXH64_update(state, buffer, length) == XXH_ERROR) abort();
-        (...)
-    }
-    (...)
-
-    /* Produce the final hash value */
-    XXH64_hash_t const hash = XXH64_digest(state);
-
-    /* State could be re-used; but in this example, it is simply freed  */
-    free(buffer);
-    XXH64_freeState(state);
-
-    return hash;
-}
-```
-
-
 ### License
 
-The library files `xxhash.c` and `xxhash.h` are BSD licensed.
-The utility `xxhsum` is GPL licensed.
-
-
-### Other programming languages
-
-Beyond the C reference version,
-xxHash is also available from many different programming languages,
-thanks to great contributors.
-They are [listed here](http://www.xxhash.com/#other-languages).
-
+Released under the terms of the BSD 2-Clause license.
 
 ### Packaging status
 
